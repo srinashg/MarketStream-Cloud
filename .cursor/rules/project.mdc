@@ -1,69 +1,69 @@
----
-description: MarketStream Cloud scope, stack, backend-first TDD, testing and milestones
-alwaysApply: true
----
+Project objective: Build a cloud-based market intelligence platform that helps decide which stocks to buy/sell.
 
-# MarketStream Cloud — Project Rules
+Prompts: “how much money you’d like to invest?”
+User: $1500
 
-## Project objective
-Build a cloud-based market intelligence platform to help users research potential stock buy/sell decisions. Provide transparent, evidence-based explanations rather than guaranteed "best stock" predictions or automated trading.
+Platform analyzes markets and news from different websites and social media applications to determine the best stocks - explain why these stocks are chosen as the best stocks, with evidence-based reasoning from market trends and even investor advice (like the wealthiest, most experienced investors)
+Also highlight where Trump, wealthiest people (like Elon Musk, NVIDIA CEO, Warren Buffet) is investing his money
+Analyze trends such as actuators
+Personalized Investment Research: Users enter their investment budget, risk tolerance, and investment horizon to explore suitable investment scenarios and potential stock opportunities.
+What are the user’s short-term and long-term investment goal(s)?
+Long-term: retirement planning, home buying, education planning, generational wealth (inheritance)
+Short-term: wedding planning, car payment, emergency funds
+Portfolio simulation - VERY helpful!
 
-Example: A user enters a $1,500 investment budget. Ask for risk tolerance, investment horizon, and short-/long-term goals, then show relevant research and hypothetical portfolio simulations.
+Tech stack:
+Google Cloud: deployment
+Microsoft Fabric: dashboards and analytics
+Python/FastAPI: backend and AI
+Angular: UI
+NoSQL: database
+Cursor: AI coding assistant
+Testing: see below recommendation
 
-### Business requirements
-- Analyze market prices, fundamentals and financial news from permitted data sources; social-media analysis is a later feature. Explain opportunities and downside risks with traceable sources, publication dates and data timestamps.
-- Where publicly disclosed, research investments associated with Trump, Elon Musk, NVIDIA CEO Jensen Huang, Warren Buffett, and other notable investors. Distinguish personal holdings from corporate/fund holdings, transactions from holdings, and transaction dates from filing dates. Never infer undisclosed current positions.
-- Analyze emerging technologies, beginning with robotics actuators and their supply chains.
-- Support personalized research based on budget, risk tolerance, investment horizon and goals.
-- Long-term goals: retirement, home purchase, education, generational wealth.
-- Short-term goals: wedding, car payment, emergency funds. Warn about stock-market risk for near-term obligations and emergency savings.
-- Include a portfolio simulator for allocation, historical performance, comparison and risk. It must use transparent assumptions, not promise returns.
+Recommendation: Start with Angular + Chart.js + Python/FastAPI + Google Cloud Run + Cursor. No Microsoft Fabric, no separate analytics service, no streaming infrastructure, and initially no database.
 
-## Approved MVP technology stack and sole responsibilities
-- **Angular:** frontend UI, inputs and navigation.
-- **Chart.js:** charts and visualizations of analysis and simulations.
-- **Python + FastAPI:** REST backend, validation, deterministic financial calculations, source integration and optional AI-model API integration.
-- **Google Cloud Run:** deploy/host the FastAPI backend after local testing.
-- **Cursor:** AI coding assistant for implementation, testing and explanation.
-- **GitHub / GitHub Actions:** version control, collaboration and automated CI, later deployment.
+Testing:
 
-Do **not** add Microsoft Fabric, a separate analytics platform, streaming infrastructure, or a database to the MVP. Firestore (NoSQL) is optional later if persistent profiles/portfolios become necessary. No real-money trading.
+Technology | Testing tool | Purpose
+Python / FastAPI | pytest + FastAPI TestClient | Unit and API tests
+Angular | Angular's configured test runner | Component and form tests
+Chart.js | Angular component tests | Verify data passed to charts
+Full application | Playwright | End-to-end browser tests
+Google Cloud | Cloud Logging + deployment smoke tests | Operational verification
+Cursor | AI-assisted test generation | Help write tests and discover edge cases
 
-Build and test locally with fixtures/mock data before connecting paid market-data or AI providers. Never fabricate prices, disclosures, news or citations.
+Steps:
 
-## Required implementation sequence
-1. **Tests first (TDD):** write automated backend pytest tests for one behavior/feature.
-2. **Backend implementation:** RED (show expected test failure) -> GREEN (minimum Python/FastAPI code) -> REFACTOR (simplify while keeping tests passing).
-3. **Integration tests:** test FastAPI endpoints and service interactions, initially using mocks for external APIs. Prefer developing API tests alongside the feature, not postponing them until the whole backend is done.
-4. **Frontend:** Angular + Chart.js; automated component tests and Playwright end-to-end flows.
-5. **GCP:** deploy tested code to Cloud Run, add CI/CD and automated deployment smoke tests; verify Cloud Logging.
+1
+Tests First (TDD)
+Write automated pytest tests for each backend feature before implementing it.
 
-Never implement all phases at once. Propose a small scoped plan before major changes. Explain decisions briefly and obtain approval for significant dependencies, cloud actions, or expenses.
+2
+Backend Development
+Implement Python/FastAPI functionality using RED → GREEN → REFACTOR.
 
-## Automated testing tools
-| Layer | Tool | What it verifies |
-| --- | --- | --- |
-| Python/FastAPI | pytest + FastAPI TestClient | Unit and API/integration tests |
-| Angular | Angular project's configured test runner | Component and form behavior |
-| Chart.js | Angular component tests | Correct chart input data |
-| Full app | Playwright | Browser-level end-to-end user flows |
-| Google Cloud | Cloud Logging + automated smoke tests | Deployment health and operational behavior |
-| Cursor | AI-assisted test creation | Draft and review edge cases; tests must actually execute |
+3
+Integration Testing
+Verify FastAPI endpoints, business logic, and eventually external financial API integrations.
 
-Testing must be automated rather than relying on manual verification. Use deterministic fixtures, mocks and assertions. Do not claim tests pass unless executed. GitHub Actions should run relevant tests on pushes and pull requests once configured.
+4
+Frontend Development
+Build Angular and Chart.js interfaces, with automated component and Playwright end-to-end tests.
 
-Test critical cases: invalid budget/goals/horizon/risk, short-term capital preservation warnings, allocation sum and rounding, return/loss accuracy, source citations and timestamps, missing/stale market data, hallucinated AI claims, untrusted news/social inputs, API failures, authentication/privacy if introduced.
+5
+Google Cloud Deployment
+Deploy to GCP, configure CI/CD, and run automated post-deployment smoke tests.
 
-Use Decimal for currency, Python typing, Pydantic for request validation, and keep service calculations separate from route handlers.
+Project structure milestones:
 
-## Milestone 1 — Backend TDD structure
-The following is the *target layout*, not a request to create every placeholder immediately:
+Milestone 1 - backend:
 
-```text
 MarketStream-Cloud/
 ├── .cursor/
 │   └── rules/
 │       └── project.mdc
+│
 ├── backend/
 │   ├── app/
 │   │   ├── __init__.py
@@ -71,38 +71,21 @@ MarketStream-Cloud/
 │   │   ├── api/
 │   │   ├── models/
 │   │   └── services/
+│   │
 │   ├── tests/
 │   │   ├── unit/
-│   │   │   ├── investment_profile_test.py
-│   │   │   ├── portfolio_simulator_test.py
-│   │   │   ├── stock_research_test.py
-│   │   │   ├── market_news_test.py
-│   │   │   ├── investor_tracker_test.py
+│   │   │   └── investment_profile_test.py
+│   │   │   └── portfolio_simulator_test.py
+│   │   │   └── stock_research_test.py
+│   │   │   └── market_news_test.py
+│   │   │   └── investor_tracker_test.py
 │   │   │   └── tech_trends_test.py
 │   │   ├── integration/
 │   │   │   └── api_integration_test.py
 │   │   └── conftest.py
+│   │
 │   └── pyproject.toml
+│
 ├── .gitignore
 ├── README.md
 └── IMPLEMENTATION_PLAN.md
-```
-
-The requested test filenames end in `_test.py`. Configure pytest discovery accordingly in `pyproject.toml` (e.g. `python_files = ["test_*.py", "*_test.py"]`) or consistently migrate to standard `test_*.py` names after approval. Otherwise pytest may silently skip these tests.
-
-### Milestone 1 feature order
-Investment profile -> portfolio simulator -> stock research -> market news/AI -> public investor tracker -> technology trends -> API integration and regression checks. Add API-level tests as each feature is developed.
-
-## Later milestones
-- **Milestone 2:** Complete FastAPI backend and automated integration tests.
-- **Milestone 3:** Angular frontend, Chart.js and automated component/E2E tests.
-- **Milestone 4:** Google Cloud Run deployment, GitHub Actions CI/CD, logging and smoke tests.
-
-No GCP provisioning, deployment, paid API activation or destructive operations without explicit approval. Aim for a low-cost solution (roughly $10/month target), but do not imply a hard budget cap.
-
-## Cursor working style
-- Inspect existing files before editing. Preserve teammate contributions.
-- Implement only the currently approved feature; no unrelated scaffolding or premature abstractions.
-- For each TDD iteration, report the RED failure, minimal GREEN change, refactor, executed test command and results.
-- Keep code readable and simple enough to explain in an interview.
-- Use branches/pull requests for collaboration; never commit secrets or local credentials.
