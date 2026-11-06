@@ -1,91 +1,34 @@
-Project objective: Build a cloud-based market intelligence platform that helps decide which stocks to buy/sell.
+---
+description: MarketStream Cloud project rules for Cursor AI assistant
+---
 
-Prompts: “how much money you’d like to invest?”
-User: $1500
+# MarketStream Cloud
 
-Platform analyzes markets and news from different websites and social media applications to determine the best stocks - explain why these stocks are chosen as the best stocks, with evidence-based reasoning from market trends and even investor advice (like the wealthiest, most experienced investors)
-Also highlight where Trump, wealthiest people (like Elon Musk, NVIDIA CEO, Warren Buffet) is investing his money
-Analyze trends such as actuators
-Personalized Investment Research: Users enter their investment budget, risk tolerance, and investment horizon to explore suitable investment scenarios and potential stock opportunities.
-What are the user’s short-term and long-term investment goal(s)?
-Long-term: retirement planning, home buying, education planning, generational wealth (inheritance)
-Short-term: wedding planning, car payment, emergency funds
-Portfolio simulation - VERY helpful!
+## Project Overview
+A cloud-based market intelligence platform that helps users decide which stocks to buy/sell.
 
-Tech stack:
-Google Cloud: deployment
-Microsoft Fabric: dashboards and analytics
-Python/FastAPI: backend and AI
-Angular: UI
-NoSQL: database
-Cursor: AI coding assistant
-Testing: see below recommendation
+## Tech Stack
+- **Backend**: Python / FastAPI
+- **Frontend**: Angular + Chart.js
+- **Database**: NoSQL (future milestone)
+- **Deployment**: Google Cloud Run
+- **Testing**: pytest + FastAPI TestClient (backend), Angular test runner + Playwright (frontend)
 
-Recommendation: Start with Angular + Chart.js + Python/FastAPI + Google Cloud Run + Cursor. No Microsoft Fabric, no separate analytics service, no streaming infrastructure, and initially no database.
+## Development Process
+Follow strict TDD: write tests FIRST (RED), then implement (GREEN), then refactor (REFACTOR).
 
-Testing:
+## Backend Structure
+backend/
+  app/         - FastAPI application code
+    api/       - Route handlers
+    models/    - Pydantic data models
+    services/  - Business logic
+  tests/
+    unit/      - Unit tests per feature
+    integration/ - API integration tests
 
-Technology | Testing tool | Purpose
-Python / FastAPI | pytest + FastAPI TestClient | Unit and API tests
-Angular | Angular's configured test runner | Component and form tests
-Chart.js | Angular component tests | Verify data passed to charts
-Full application | Playwright | End-to-end browser tests
-Google Cloud | Cloud Logging + deployment smoke tests | Operational verification
-Cursor | AI-assisted test generation | Help write tests and discover edge cases
-
-Steps:
-
-1
-Tests First (TDD)
-Write automated pytest tests for each backend feature before implementing it.
-
-2
-Backend Development
-Implement Python/FastAPI functionality using RED → GREEN → REFACTOR.
-
-3
-Integration Testing
-Verify FastAPI endpoints, business logic, and eventually external financial API integrations.
-
-4
-Frontend Development
-Build Angular and Chart.js interfaces, with automated component and Playwright end-to-end tests.
-
-5
-Google Cloud Deployment
-Deploy to GCP, configure CI/CD, and run automated post-deployment smoke tests.
-
-Project structure milestones:
-
-Milestone 1 - backend:
-
-MarketStream-Cloud/
-├── .cursor/
-│   └── rules/
-│       └── project.mdc
-│
-├── backend/
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py
-│   │   ├── api/
-│   │   ├── models/
-│   │   └── services/
-│   │
-│   ├── tests/
-│   │   ├── unit/
-│   │   │   └── investment_profile_test.py
-│   │   │   └── portfolio_simulator_test.py
-│   │   │   └── stock_research_test.py
-│   │   │   └── market_news_test.py
-│   │   │   └── investor_tracker_test.py
-│   │   │   └── tech_trends_test.py
-│   │   ├── integration/
-│   │   │   └── api_integration_test.py
-│   │   └── conftest.py
-│   │
-│   └── pyproject.toml
-│
-├── .gitignore
-├── README.md
-└── IMPLEMENTATION_PLAN.md
+## Coding Standards
+- All functions must have type hints
+- All modules must have docstrings
+- Tests must be written before implementation (TDD)
+- Keep services stateless; no side effects in pure logic functions
