@@ -1,0 +1,146 @@
+@startuml firestore_schema
+!theme plain
+skinparam linetype ortho
+skinparam shadowing false
+
+skinparam class {
+    BackgroundColor #FFF8E1
+    BorderColor     #F57F17
+    HeaderBackgroundColor #F9A825
+    HeaderFontColor #000000
+    HeaderFontStyle bold
+    FontColor       #212121
+    FontSize        12
+    AttributeFontSize 11
+}
+
+skinparam arrow {
+    Color     #616161
+    FontColor #616161
+    FontSize  10
+}
+
+skinparam note {
+    BackgroundColor #E3F2FD
+    BorderColor     #1565C0
+}
+
+title MarketStream Cloud — Firestore Schema\n<size:11>(generated from analyticalmonk/firestore-schema-visualizer style)</size>
+
+' ══════════════════════════════════════════════
+' Collections
+' ══════════════════════════════════════════════
+
+class "investment_profiles" as IP <<collection>> {
+    + id            : string   <<PK, UUID>>
+    --
+    budget          : number   > 0
+    risk_tolerance  : string   low | moderate | high
+    horizon         : string   short_term | medium_term | long_term
+    short_term_goals: string[]
+    long_term_goals : string[]
+    created_at      : timestamp
+}
+
+class "portfolio_simulations" as PS <<collection>> {
+    + id              : string <<PK, UUID>>
+    --
+    profile_id        : string <<FK → investment_profiles>>
+    budget            : number  > 0
+    stocks            : map[]   [{symbol, weight}]
+    years             : number  > 0
+    projected_value   : number
+    scenarios         : map     {optimistic, base, pessimistic}
+    simulated_at      : timestamp
+}
+
+class "stock_recommendations" as SR <<collection>> {
+    + id              : string <<PK, UUID>>
+    --
+    profile_id        : string <<FK → investment_profiles>>
+    budget            : number
+    risk_tolerance    : string  low | moderate | high
+    recommendations   : map[]   [{symbol, score, reasoning, volatility}]
+    generated_at      : timestamp
+}
+
+class "news_analyses" as NA <<collection>> {
+    + id               : string <<PK, UUID>>
+    --
+    symbol             : string  e.g. "NVDA"
+    overall_sentiment  : string  positive | negative | neutral
+    article_count      : number
+    articles           : map[]   [{title, source, url, sentiment}]
+    analysed_at        : timestamp
+}
+
+class "investor_profiles" as INV <<collection>> {
+    + id              : string <<PK, UUID>>
+    --
+    name              : string  <<unique>>
+    organization      : string
+    known_strategy    : string
+}
+
+class "investor_positions" as INVP <<collection>> {
+    + id              : string <<PK, UUID>>
+    --
+    investor_name     : string <<FK → investor_profiles.name>>
+    symbol            : string  uppercase ticker
+    action            : string  buy | sell | hold
+    recorded_at       : timestamp
+}
+
+class "trend_signals" as TS <<collection>> {
+    + id              : string <<PK, UUID>>
+    --
+    category          : string  ai | robotics_and_actuators |\n                        electric_vehicles | cloud_computing | energy
+    strength          : number  0.0 – 10.0
+    description       : string
+    mapped_stocks     : string[]
+    analysed_at       : timestamp
+}
+
+' ══════════════════════════════════════════════
+' Sub-document notes
+' ══════════════════════════════════════════════
+
+note right of PS
+  <b>stocks[]</b> sub-document:
+  { symbol: string,
+    weight: number }
+  weights must sum to 1.0
+end note
+
+note right of SR
+  <b>recommendations[]</b> sub-document:
+  { symbol: string,
+    score: number 0–10,
+    reasoning: string,
+    volatility: low | moderate | high }
+  ordered by score DESC
+end note
+
+note bottom of NA
+  <b>articles[]</b> sub-document:
+  { title: string,
+    source: string,
+    url: string,
+    sentiment: positive | negative | neutral }
+end note
+
+' ══════════════════════════════════════════════
+' Relationships
+' ══════════════════════════════════════════════
+
+IP "1" --o{ PS  : "profile_id\n(optional)"
+IP "1" --o{ SR  : "profile_id\n(optional)"
+INV "1" --{ INVP : "investor_name"
+
+' Loose associations (symbol-based, not hard FK)
+IP .. SR   : "risk_tolerance\ndrives filter"
+SR .. NA   : "symbol\nlookup"
+TS .. SR   : "category →\nmapped_stocks\nenrich picks"
+TS .. NA   : "symbol\noverlap"
+
+@enduml
